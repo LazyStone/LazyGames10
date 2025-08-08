@@ -1,0 +1,555 @@
+index.html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>LazyGames - Deine Mini-Spiele</title>
+<style>
+  /* Reset & Basis */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #222c44, #4863a0);
+    color: #eee;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  header {
+    padding: 1rem; text-align:center;
+    font-size: 2.5rem; font-weight: 900;
+    letter-spacing: 2px;
+    color: #ffd600;
+    text-shadow: 2px 2px 5px #0008;
+    user-select: none;
+  }
+  nav {
+    margin-bottom: 1rem;
+    display: flex; justify-content: center; gap: 1rem;
+    flex-wrap: wrap;
+  }
+  nav button {
+    background: #ffd600;
+    color: #222;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px #0005;
+    transition: background 0.3s;
+  }
+  nav button:hover, nav button:focus {
+    background: #ffec7c;
+    outline:none;
+  }
+  main {
+    flex-grow:1;
+    width: 100%; max-width: 480px;
+    background: #1f2a47cc;
+    padding: 1rem;
+    border-radius: 15px;
+    box-shadow: 0 0 15px #000a;
+  }
+  footer {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+    color: #bbb;
+    user-select:none;
+  }
+
+  /* Spiele Container */
+  .game {
+    display: none;
+  }
+  .game.active {
+    display: block;
+  }
+  
+  /* Paintball Spiel */
+  #paintballCanvas {
+    border: 3px solid #ffd600;
+    border-radius: 15px;
+    background: #12324c;
+    width: 100%; height: 300px;
+    touch-action: none;
+  }
+  #paintballInstructions {
+    margin-top: 0.5rem; font-size: 0.9rem; color: #ddd;
+  }
+
+  /* Autorennen */
+  #raceCanvas {
+    border: 3px solid #f05c2b;
+    border-radius: 15px;
+    background: #070b0f;
+    width: 100%; height: 320px;
+    touch-action: none;
+  }
+  #raceInstructions {
+    margin-top: 0.5rem; font-size: 0.9rem; color: #eee;
+  }
+
+  /* Mädchen Schminken & Anziehen */
+  #dressupContainer {
+    text-align: center;
+  }
+  #girlCanvas {
+    border: 3px solid #ff69b4;
+    border-radius: 15px;
+    background: #3a2a4f;
+    width: 100%; height: 400px;
+    touch-action: none;
+  }
+  #dressupControls {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  #dressupControls select, #dressupControls button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+  #dressupControls button {
+    background: #ff69b4;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 2px 5px #900a;
+  }
+  #dressupControls button:hover {
+    background: #ff85c3;
+  }
+
+</style>
+</head>
+<body>
+
+<header>LazyGames</header>
+
+<nav>
+  <button data-game="paintball">🎯 Paintball</button>
+  <button data-game="race">🏎️ Autorennen</button>
+  <button data-game="dressup">💄 Mädchen schminken & kleiden</button>
+</nav>
+
+<main>
+  <!-- Paintball -->
+  <section id="paintball" class="game active" aria-label="Paintball Spiel">
+    <canvas id="paintballCanvas" width="480" height="300" aria-label="Paintball Spielbereich"></canvas>
+    <p id="paintballInstructions">Tippe/Klicke auf das Spielfeld, um Farb-Kugeln zu schießen. Triff die Ziele!</p>
+  </section>
+
+  <!-- Autorennen -->
+  <section id="race" class="game" aria-label="Autorennen Spiel">
+    <canvas id="raceCanvas" width="480" height="320" aria-label="Autorennen Spielfeld"></canvas>
+    <p id="raceInstructions">Benutze Pfeiltasten (Desktop) oder tippe links/rechts (Mobil), um das Auto zu steuern. Weiche Hindernissen aus!</p>
+  </section>
+
+  <!-- Mädchen Schminken & Kleiden -->
+  <section id="dressup" class="game" aria-label="Mädchen schminken & kleiden Spiel">
+    <div id="dressupContainer">
+      <canvas id="girlCanvas" width="480" height="400" aria-label="Mädchen Schminken Bereich"></canvas>
+      <div id="dressupControls">
+        <select id="lipstickSelect" aria-label="Lippenstift Farbe">
+          <option value="none">Lippenstift wählen</option>
+          <option value="pink">Pink</option>
+          <option value="red">Rot</option>
+          <option value="purple">Lila</option>
+          <option value="orange">Orange</option>
+        </select>
+        <select id="dressSelect" aria-label="Kleider auswählen">
+          <option value="none">Kleid wählen</option>
+          <option value="blue">Blaues Kleid</option>
+          <option value="green">Grünes Kleid</option>
+          <option value="red">Rotes Kleid</option>
+          <option value="yellow">Gelbes Kleid</option>
+        </select>
+        <button id="resetDressup">Zurücksetzen</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© 2025 LazyGames | Entwickelt mit ❤️ von ChatGPT</footer>
+
+<!-- Sound & Musik -->
+<audio id="shootSound" src="https://actions.google.com/sounds/v1/impacts/paintball_gun_shot.ogg" preload="auto"></audio>
+<audio id="hitSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" preload="auto"></audio>
+<audio id="raceMusic" src="https://cdn.pixabay.com/download/audio/2022/03/22/audio_71c0a8d70a.mp3?filename=8bit-race-11313.mp3" preload="auto" loop></audio>
+<audio id="buttonClick" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+
+<script>
+(() => {
+  // Navigation & Spielwechsel
+  const navButtons = document.querySelectorAll('nav button');
+  const games = document.querySelectorAll('.game');
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      playSound(buttonClick);
+      const target = btn.dataset.game;
+      games.forEach(g => {
+        if(g.id === target) {
+          g.classList.add('active');
+        } else {
+          g.classList.remove('active');
+        }
+      });
+      // Musik steuern
+      if(target === 'race'){
+        raceMusic.play();
+      } else {
+        raceMusic.pause();
+        raceMusic.currentTime = 0;
+      }
+    });
+  });
+
+  // Soundeffekte
+  const shootSound = document.getElementById('shootSound');
+  const hitSound = document.getElementById('hitSound');
+  const raceMusic = document.getElementById('raceMusic');
+  const buttonClick = document.getElementById('buttonClick');
+
+  function playSound(audio){
+    audio.currentTime = 0;
+    audio.play().catch(e=>{/*Autoplay evtl blockiert*/});
+  }
+
+  /* ------------- PAINTBALL Spiel ------------- */
+  const paintballCanvas = document.getElementById('paintballCanvas');
+  const ctxPaint = paintballCanvas.getContext('2d');
+
+  const paintballs = [];
+  const targets = [];
+  const colors = ['#ff3b3b', '#33ff77', '#3377ff', '#ffff33', '#ff33d1'];
+
+  // Ziel-Objekte: Kreise an zufälligen Positionen
+  function createTargets(){
+    targets.length = 0;
+    for(let i=0; i<6; i++){
+      targets.push({
+        x: Math.random() * (paintballCanvas.width - 40) + 20,
+        y: Math.random() * (paintballCanvas.height - 40) + 20,
+        radius: 20,
+        hit: false
+      });
+    }
+  }
+  createTargets();
+
+  // Paintball Kugel
+  class Paintball {
+    constructor(x,y,color){
+      this.x = x;
+      this.y = y;
+      this.radius = 8;
+      this.color = color;
+      this.speedY = -6;
+      this.active = true;
+    }
+    update(){
+      this.y += this.speedY;
+      if(this.y < -10) this.active = false;
+    }
+    draw(){
+      ctxPaint.beginPath();
+      ctxPaint.fillStyle = this.color;
+      ctxPaint.shadowColor = this.color;
+      ctxPaint.shadowBlur = 8;
+      ctxPaint.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+      ctxPaint.fill();
+      ctxPaint.shadowBlur = 0;
+    }
+  }
+
+  function drawTargets(){
+    targets.forEach(t => {
+      ctxPaint.beginPath();
+      ctxPaint.lineWidth = 4;
+      ctxPaint.strokeStyle = t.hit ? '#999' : '#fff';
+      ctxPaint.fillStyle = t.hit ? '#555' : '#000';
+      ctxPaint.shadowColor = t.hit ? 'transparent' : '#ffd600';
+      ctxPaint.shadowBlur = t.hit ? 0 : 12;
+      ctxPaint.arc(t.x, t.y, t.radius, 0, Math.PI*2);
+      ctxPaint.fill();
+      ctxPaint.stroke();
+    });
+  }
+
+  function updatePaintballGame(){
+    ctxPaint.clearRect(0,0,paintballCanvas.width,paintballCanvas.height);
+
+    drawTargets();
+
+    paintballs.forEach((ball, i) => {
+      ball.update();
+      ball.draw();
+
+      // Kollisionsprüfung mit Targets
+      targets.forEach(t => {
+        if(!t.hit){
+          const dx = ball.x - t.x;
+          const dy = ball.y - t.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist < ball.radius + t.radius){
+            t.hit = true;
+            ball.active = false;
+            playSound(hitSound);
+          }
+        }
+      });
+
+      if(!ball.active) {
+        paintballs.splice(i,1);
+      }
+    });
+    requestAnimationFrame(updatePaintballGame);
+  }
+
+  paintballCanvas.addEventListener('pointerdown', e => {
+    const rect = paintballCanvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    // Schuss von unten (x, canvas.height)
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    paintballs.push(new Paintball(x, paintballCanvas.height - 10, color));
+    playSound(shootSound);
+  });
+
+  updatePaintballGame();
+
+  /* ------------- Autorennen ------------- */
+  const raceCanvas = document.getElementById('raceCanvas');
+  const ctxRace = raceCanvas.getContext('2d');
+
+  const carWidth = 40;
+  const carHeight = 70;
+  let carX = raceCanvas.width / 2 - carWidth/2;
+  const carY = raceCanvas.height - carHeight - 10;
+
+  let obstacles = [];
+  let obstacleSpeed = 3;
+  let obstacleSpawnTimer = 0;
+
+  let leftPressed = false;
+  let rightPressed = false;
+
+  let score = 0;
+
+  function resetRace(){
+    carX = raceCanvas.width / 2 - carWidth/2;
+    obstacles = [];
+    obstacleSpeed = 3;
+    obstacleSpawnTimer = 0;
+    score = 0;
+  }
+
+  function drawCar(){
+    ctxRace.fillStyle = '#f05c2b';
+    ctxRace.strokeStyle = '#fff';
+    ctxRace.lineWidth = 3;
+    ctxRace.beginPath();
+    ctxRace.moveTo(carX + carWidth/2, carY);
+    ctxRace.lineTo(carX + carWidth, carY + carHeight);
+    ctxRace.lineTo(carX, carY + carHeight);
+    ctxRace.closePath();
+    ctxRace.fill();
+    ctxRace.stroke();
+  }
+
+  function drawObstacles(){
+    ctxRace.fillStyle = '#222';
+    obstacles.forEach(obs => {
+      ctxRace.fillRect(obs.x, obs.y, obs.w, obs.h);
+    });
+  }
+
+  function updateObstacles(){
+    obstacleSpawnTimer++;
+    if(obstacleSpawnTimer > 60) {
+      obstacleSpawnTimer = 0;
+      // Neues Hindernis
+      const w = 40 + Math.random()*30;
+      obstacles.push({
+        x: Math.random()*(raceCanvas.width - w),
+        y: -40,
+        w: w,
+        h: 20,
+      });
+      if(score > 30) obstacleSpeed = 4;
+      if(score > 60) obstacleSpeed = 5.5;
+    }
+
+    obstacles.forEach((obs, i) => {
+      obs.y += obstacleSpeed;
+
+      // Kollisionscheck Auto vs Hindernis
+      if(obs.y + obs.h > carY && obs.y < carY + carHeight) {
+        if(obs.x < carX + carWidth && obs.x + obs.w > carX) {
+          // Crash = Reset
+          resetRace();
+          alert('Crash! Versuch es nochmal!');
+          return;
+        }
+      }
+      // Entferne Hindernisse aus Sichtfeld
+      if(obs.y > raceCanvas.height) {
+        obstacles.splice(i,1);
+        score++;
+      }
+    });
+  }
+
+  function updateRaceGame(){
+    ctxRace.clearRect(0,0,raceCanvas.width,raceCanvas.height);
+
+    // Strecke zeichnen
+    ctxRace.fillStyle = '#444';
+    ctxRace.fillRect(50, 0, raceCanvas.width - 100, raceCanvas.height);
+
+    // Fahrbahnstreifen
+    ctxRace.strokeStyle = '#eee';
+    ctxRace.lineWidth = 4;
+    ctxRace.setLineDash([20, 15]);
+    ctxRace.beginPath();
+    ctxRace.moveTo(raceCanvas.width/2, 0);
+    ctxRace.lineTo(raceCanvas.width/2, raceCanvas.height);
+    ctxRace.stroke();
+    ctxRace.setLineDash([]);
+
+    // Hindernisse
+    drawObstacles();
+    updateObstacles();
+
+    // Auto bewegen
+    if(leftPressed) carX -= 5;
+    if(rightPressed) carX += 5;
+    if(carX < 50) carX = 50;
+    if(carX > raceCanvas.width - 50 - carWidth) carX = raceCanvas.width - 50 - carWidth;
+
+    drawCar();
+
+    // Score anzeigen
+    ctxRace.fillStyle = '#fff';
+    ctxRace.font = '18px Arial';
+    ctxRace.fillText('Score: '+score, 10, 25);
+
+    requestAnimationFrame(updateRaceGame);
+  }
+
+  // Tastatursteuerung
+  window.addEventListener('keydown', e => {
+    if(e.key === 'ArrowLeft') leftPressed = true;
+    if(e.key === 'ArrowRight') rightPressed = true;
+  });
+  window.addEventListener('keyup', e => {
+    if(e.key === 'ArrowLeft') leftPressed = false;
+    if(e.key === 'ArrowRight') rightPressed = false;
+  });
+
+  // Touchsteuerung fürs Rennen (links/rechts Buttons)
+  raceCanvas.addEventListener('touchstart', e => {
+    const rect = raceCanvas.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - rect.left;
+    if(touchX < raceCanvas.width/2) {
+      leftPressed = true;
+      rightPressed = false;
+    } else {
+      rightPressed = true;
+      leftPressed = false;
+    }
+    e.preventDefault();
+  });
+  raceCanvas.addEventListener('touchend', e => {
+    leftPressed = false;
+    rightPressed = false;
+    e.preventDefault();
+  });
+
+  resetRace();
+  updateRaceGame();
+
+  /* ------------- Mädchen schminken & kleiden ------------- */
+  const girlCanvas = document.getElementById('girlCanvas');
+  const ctxGirl = girlCanvas.getContext('2d');
+
+  const dressup = {
+    lipstick: null,
+    dress: null,
+  };
+
+  // Basis-Mädchen zeichnen
+  function drawGirlBase(){
+    ctxGirl.clearRect(0, 0, girlCanvas.width, girlCanvas.height);
+    // Kopf
+    ctxGirl.fillStyle = '#fcd7b1';
+    ctxGirl.beginPath();
+    ctxGirl.ellipse(240, 140, 70, 90, 0, 0, 2*Math.PI);
+    ctxGirl.fill();
+
+    // Haare
+    ctxGirl.fillStyle = '#4b2e05';
+    ctxGirl.beginPath();
+    ctxGirl.ellipse(240, 110, 90, 100, 0, 0, Math.PI*2);
+    ctxGirl.fill();
+
+    // Hals
+    ctxGirl.fillStyle = '#fcd7b1';
+    ctxGirl.fillRect(230, 220, 20, 30);
+
+    // Körper
+    if(dressup.dress){
+      ctxGirl.fillStyle = dressup.dress;
+    } else {
+      ctxGirl.fillStyle = '#888';
+    }
+    ctxGirl.fillRect(200, 250, 80, 120);
+
+    // Lippen
+    if(dressup.lipstick){
+      ctxGirl.fillStyle = dressup.lipstick;
+      ctxGirl.beginPath();
+      ctxGirl.arc(240, 180, 12, 0, Math.PI);
+      ctxGirl.fill();
+    }
+  }
+
+  drawGirlBase();
+
+  document.getElementById('lipstickSelect').addEventListener('change', e => {
+    const val = e.target.value;
+    dressup.lipstick = val === 'none' ? null : val;
+    drawGirlBase();
+  });
+
+  document.getElementById('dressSelect').addEventListener('change', e => {
+    const val = e.target.value;
+    const colors = {
+      blue: '#3a6fd5',
+      green: '#58b368',
+      red: '#d5535b',
+      yellow: '#f4e04d'
+    };
+    dressup.dress = colors[val] || null;
+    drawGirlBase();
+  });
+
+  document.getElementById('resetDressup').addEventListener('click', () => {
+    dressup.lipstick = null;
+    dressup.dress = null;
+    drawGirlBase();
+    playSound(buttonClick);
+  });
+
+})();
+</script>
+
+</body>
+</html>
